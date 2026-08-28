@@ -11,7 +11,7 @@
     .tier-box { border: 1px solid #334155; padding: 20px; margin-bottom: 20px; border-radius: 8px; background: #1e293b; }
     .hidden { display: none; }
     
-    /* Copy Protection CSS */
+    /* Copy Protection */
     .no-copy-zone {
       -webkit-user-select: none;
       -ms-user-select: none;
@@ -26,16 +26,13 @@
     .legend-box { padding: 4px 10px; border-radius: 4px; }
     
     .grid-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; text-align: center; }
-    .cell { padding: 8px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; box-sizing: border-box; }
+    .cell { padding: 8px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; color: #000; }
 
-    /* Match Your Colors Exactly */
-    .cell-yellow { background-color: #facc15; color: #000; } /* Prime Candidates */
-    .cell-blue   { background-color: #00a2ed; color: #fff; } /* Multiples of 5 / Diamond Pattern */
-    .cell-green  { background-color: #22c55e; color: #fff; } /* Root Squares (121+) */
-    .cell-white  { background-color: #ffffff; color: #000; } /* Non-candidate columns */
-
-    /* Highlight for the 1-3-7-9 Diagonal Stride (+8) */
-    .diagonal-path { border: 3px solid #ef4444 !important; font-weight: 900; }
+    /* Exact Color Matching for Your Spreadsheet */
+    .cell-yellow { background-color: #ffff00; color: #000; } /* Candidates */
+    .cell-blue   { background-color: #00a2ed; color: #fff; } /* Specific Multiples / Vectors */
+    .cell-green  { background-color: #22c55e; color: #fff; } /* Root Squares */
+    .cell-white  { background-color: #ffffff; color: #000; } /* Base Grid */
 
     button { background: #2563eb; color: #fff; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 1rem; }
     button.test-btn { background: #16a34a; padding: 14px; margin: 15px 0; color: #fff; font-weight: bold; width: 100%; border-radius: 6px; font-size: 1.1rem; }
@@ -45,7 +42,7 @@
   <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
 
   <script>
-    // Copy protection
+    // Disable right-click menu & shortcuts for copy protection
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.addEventListener('keydown', function(e) {
       if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C' || e.key === 'u' || e.key === 'U')) {
@@ -58,7 +55,7 @@
 
   <h1>Outback Sams: 7-Column Prime Framework</h1>
 
-  <!-- TEST UNLOCK BUTTON -->
+  <!-- GREEN TEST UNLOCK BUTTON -->
   <button onclick="unlockViewMode();" class="test-btn">
     🔓 TEST UNLOCK: View 7-Grid Matrix
   </button>
@@ -94,10 +91,8 @@
     
     <div class="legend">
       <span class="legend-box cell-yellow">Yellow: Prime Candidates</span>
-      <span class="legend-box cell-blue">Blue: Pattern Multiples</span>
-      <span class="legend-box cell-green">Green: Root Squares (121+)</span>
+      <span class="legend-box cell-blue">Blue: Blue Highlights</span>
       <span class="legend-box cell-white">White: Base Numbers</span>
-      <span class="legend-box" style="border: 2px solid #ef4444; color: #ef4444;">Red Border: 1-3-7-9 Diagonal Path (+8 Stride)</span>
     </div>
 
     <div class="grid-display" id="quad-grid"></div>
@@ -148,34 +143,40 @@
       }).render('#paypal-button-500');
     } catch(e) {}
 
-    function isRootSquareGreen(n) {
-      if (n < 121n) return false;
-      const rootPrimes = [11n, 13n, 17n, 19n, 23n, 29n, 31n, 37n, 41n, 43n, 47n];
-      for (let p of rootPrimes) {
-        if (p * p > n) break;
-        if (n % p === 0n) return true;
-      }
-      return false;
-    }
+    // Exact Numbers Marked Blue in your Spreadsheet
+    const blueNumbers = new Set([
+      25n, 35n, 49n, 55n, 65n, 77n, 85n, 91n, 95n, 115n, 119n, 125n, 133n
+    ]);
 
-    function getCellColorClass(num, colIndex) {
-      const bluePatternNumbers = [
-        25n, 35n, 49n, 55n, 65n, 77n, 85n, 91n, 95n, 115n, 119n, 125n, 133n, 145n, 155n, 161n, 175n, 185n, 203n, 205n, 215n, 217n
-      ];
+    // Exact Numbers Marked Yellow in your Spreadsheet (Rows 1–19)
+    const yellowNumbers = new Set([
+      1n, 4n, 5n, 7n,
+      11n, 13n,
+      17n, 19n,
+      23n,
+      29n, 31n,
+      37n, 41n,
+      43n, 47n,
+      53n,
+      59n, 61n,
+      67n,
+      71n, 73n,
+      79n, 83n,
+      89n,
+      97n,
+      101n, 103n,
+      107n, 109n,
+      113n,
+      127n, 131n
+    ]);
 
-      if (isRootSquareGreen(num) && num !== 125n) {
-        return "cell-green";
-      }
-
-      if (bluePatternNumbers.includes(num)) {
+    function getCellColorClass(num) {
+      if (blueNumbers.has(num)) {
         return "cell-blue";
       }
-
-      const candidateCols = [1, 3, 4, 6];
-      if (candidateCols.includes(colIndex)) {
+      if (yellowNumbers.has(num)) {
         return "cell-yellow";
       }
-
       return "cell-white";
     }
 
@@ -184,23 +185,11 @@
       let html = '';
       let currentNum = 1n;
 
-      // Starting the diagonal path tracking from 37 (Row 6, Col 2)
-      // Stride is +8 (down 1 row, right 1 col)
-      let diagonalValue = 37n; 
-
-      for (let r = 1; r <= 30; r++) {
+      for (let r = 1; r <= 19; r++) {
         html += `<div class="grid-row">`;
         for (let c = 1; c <= 7; c++) {
-          let cellClass = getCellColorClass(currentNum, c);
-          let extraClass = '';
-
-          // Highlight numbers along the +8 diagonal vector path
-          if (currentNum === diagonalValue) {
-            extraClass = ' diagonal-path';
-            diagonalValue += 8n; // Advance to next step on the diagonal
-          }
-
-          html += `<div class="cell ${cellClass}${extraClass}">${currentNum.toString()}</div>`;
+          let cellClass = getCellColorClass(currentNum);
+          html += `<div class="cell ${cellClass}">${currentNum.toString()}</div>`;
           currentNum++;
         }
         html += `</div>`;

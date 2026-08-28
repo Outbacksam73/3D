@@ -8,10 +8,7 @@
   <style>
     body { font-family: monospace; background: #0f172a; color: #f8fafc; padding: 20px; }
     h1 { color: #facc15; }
-   <button onclick="document.getElementById('view-mode').classList.remove('hidden'); render7Grid();" style="background:#16a34a; padding:12px; margin:15px 0; color:#fff; font-weight:bold; width:100%;">
-  🔓 TEST UNLOCK: View 7-Grid Matrix
-</button>
- .tier-box { border: 1px solid #334155; padding: 20px; margin-bottom: 20px; border-radius: 8px; background: #1e293b; }
+    .tier-box { border: 1px solid #334155; padding: 20px; margin-bottom: 20px; border-radius: 8px; background: #1e293b; }
     .hidden { display: none; }
     
     /* Copy Protection CSS */
@@ -25,11 +22,11 @@
     .grid-display { max-height: 500px; overflow-y: scroll; border: 1px solid #475569; padding: 10px; background: #020617; }
     
     /* Legend & Grid Styling */
-    .legend { display: flex; gap: 15px; margin-bottom: 10px; font-weight: bold; }
+    .legend { display: flex; gap: 15px; margin-bottom: 10px; font-weight: bold; flex-wrap: wrap; }
     .legend-box { padding: 4px 10px; border-radius: 4px; }
     
     .grid-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; text-align: center; }
-    .cell { padding: 8px; border-radius: 4px; font-weight: bold; }
+    .cell { padding: 8px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; }
 
     /* The 4 Grid Colors */
     .cell-yellow { background-color: #facc15; color: #000; } /* Pure Primes */
@@ -56,6 +53,11 @@
 <body>
 
   <h1>Outback Sams: 7-Column Prime Framework</h1>
+
+  <!-- TEMPORARY TEST BUTTON (PASTED SAFELY IN BODY) -->
+  <button onclick="document.getElementById('view-mode').classList.remove('hidden'); render7Grid();" style="background:#16a34a; padding:14px; margin:15px 0; color:#fff; font-weight:bold; width:100%; border-radius:6px; font-size:1rem;">
+    🔓 TEST UNLOCK: View 7-Grid Matrix
+  </button>
 
   <!-- ACCESS GATES / PAYWALL TIERS -->
   <div id="paywall">
@@ -107,33 +109,36 @@
     // -------------------------------------------------------------
     // PAYPAL BUTTON INTEGRATION
     // -------------------------------------------------------------
-    paypal.Buttons({
-      createOrder: function(data, actions) {
-        return actions.order.create({ purchase_units: [{ amount: { value: '100.00' } }] });
-      },
-      onApprove: function(data, actions) {
-        return actions.order.capture().then(function(details) {
-          alert('Payment received! Unlocking Mode 1 Grid.');
-          document.getElementById('view-mode').classList.remove('hidden');
-          render7Grid();
-        });
-      }
-    }).render('#paypal-button-100');
+    try {
+      paypal.Buttons({
+        createOrder: function(data, actions) {
+          return actions.order.create({ purchase_units: [{ amount: { value: '100.00' } }] });
+        },
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(details) {
+            alert('Payment received! Unlocking Mode 1 Grid.');
+            document.getElementById('view-mode').classList.remove('hidden');
+            render7Grid();
+          });
+        }
+      }).render('#paypal-button-100');
 
-    paypal.Buttons({
-      createOrder: function(data, actions) {
-        return actions.order.create({ purchase_units: [{ amount: { value: '500.00' } }] });
-      },
-      onApprove: function(data, actions) {
-        return actions.order.capture().then(function(details) {
-          alert('Payment received! Unlocking Full Mode 2 Access.');
-          document.getElementById('view-mode').classList.remove('hidden');
-          document.getElementById('export-mode').classList.remove('hidden');
-          render7Grid();
-        });
-      }
-    }).render('#paypal-button-500');
-
+      paypal.Buttons({
+        createOrder: function(data, actions) {
+          return actions.order.create({ purchase_units: [{ amount: { value: '500.00' } }] });
+        },
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(details) {
+            alert('Payment received! Unlocking Full Mode 2 Access.');
+            document.getElementById('view-mode').classList.remove('hidden');
+            document.getElementById('export-mode').classList.remove('hidden');
+            render7Grid();
+          });
+        }
+      }).render('#paypal-button-500');
+    } catch(e) {
+      console.log("PayPal SDK pending Client ID");
+    }
 
     // -------------------------------------------------------------
     // CORE 7-GRID FILTERING LOGIC ENGINE

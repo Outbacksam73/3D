@@ -28,11 +28,10 @@
     .grid-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; text-align: center; }
     .cell { padding: 8px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; color: #000; }
 
-    /* Exact Color Matching for Your Spreadsheet */
-    .cell-yellow { background-color: #ffff00; color: #000; } /* Candidates */
-    .cell-blue   { background-color: #00a2ed; color: #fff; } /* Specific Multiples / Vectors */
-    .cell-green  { background-color: #22c55e; color: #fff; } /* Root Squares */
-    .cell-white  { background-color: #ffffff; color: #000; } /* Base Grid */
+    /* Match Your Colors Exactly */
+    .cell-yellow { background-color: #ffff00; color: #000; } /* Prime Candidates */
+    .cell-blue   { background-color: #00a2ed; color: #fff; } /* Pattern Multiples (5, 7) */
+    .cell-white  { background-color: #ffffff; color: #000; } /* Base Grid (2, 3 multiples) */
 
     button { background: #2563eb; color: #fff; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 1rem; }
     button.test-btn { background: #16a34a; padding: 14px; margin: 15px 0; color: #fff; font-weight: bold; width: 100%; border-radius: 6px; font-size: 1.1rem; }
@@ -91,7 +90,7 @@
     
     <div class="legend">
       <span class="legend-box cell-yellow">Yellow: Prime Candidates</span>
-      <span class="legend-box cell-blue">Blue: Blue Highlights</span>
+      <span class="legend-box cell-blue">Blue: Pattern Multiples (5s & 7s)</span>
       <span class="legend-box cell-white">White: Base Numbers</span>
     </div>
 
@@ -143,41 +142,28 @@
       }).render('#paypal-button-500');
     } catch(e) {}
 
-    // Exact Numbers Marked Blue in your Spreadsheet
-    const blueNumbers = new Set([
-      25n, 35n, 49n, 55n, 65n, 77n, 85n, 91n, 95n, 115n, 119n, 125n, 133n
-    ]);
-
-    // Exact Numbers Marked Yellow in your Spreadsheet (Rows 1–19)
-    const yellowNumbers = new Set([
-      1n, 4n, 5n, 7n,
-      11n, 13n,
-      17n, 19n,
-      23n,
-      29n, 31n,
-      37n, 41n,
-      43n, 47n,
-      53n,
-      59n, 61n,
-      67n,
-      71n, 73n,
-      79n, 83n,
-      89n,
-      97n,
-      101n, 103n,
-      107n, 109n,
-      113n,
-      127n, 131n
-    ]);
-
+    // Dynamic Algorithmic Logic Matching Your Excel Model
     function getCellColorClass(num) {
-      if (blueNumbers.has(num)) {
-        return "cell-blue";
-      }
-      if (yellowNumbers.has(num)) {
+      // Direct Row 1 rule matching your screenshot (1, 4, 5, 7 are yellow)
+      if (num === 1n || num === 4n || num === 5n || num === 7n) {
         return "cell-yellow";
       }
-      return "cell-white";
+      if (num === 2n || num === 3n || num === 6n) {
+        return "cell-white";
+      }
+
+      // Filter out multiples of 2 and 3 (keeps non-candidates white)
+      if (num % 2n === 0n || num % 3n === 0n) {
+        return "cell-white";
+      }
+
+      // Mark multiples of 5 and 7 blue (25, 35, 49, 55, 65, 77, 85, 91, 95, 115, 119, 125, 133...)
+      if (num % 5n === 0n || num % 7n === 0n) {
+        return "cell-blue";
+      }
+
+      // All remaining numbers are Yellow Prime Candidates
+      return "cell-yellow";
     }
 
     function renderGrid() {
@@ -185,7 +171,7 @@
       let html = '';
       let currentNum = 1n;
 
-      for (let r = 1; r <= 19; r++) {
+      for (let r = 1; r <= 30; r++) {
         html += `<div class="grid-row">`;
         for (let c = 1; c <= 7; c++) {
           let cellClass = getCellColorClass(currentNum);

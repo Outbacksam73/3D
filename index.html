@@ -30,7 +30,8 @@
 
     /* Match Your Colors Exactly */
     .cell-yellow { background-color: #ffff00; color: #000; } /* Prime Candidates */
-    .cell-blue   { background-color: #00a2ed; color: #fff; } /* Pattern Multiples (5, 7) */
+    .cell-blue   { background-color: #00a2ed; color: #fff; } /* Multiples of 5 & 7 */
+    .cell-green  { background-color: #22c55e; color: #fff; } /* Root Squares (121+) */
     .cell-white  { background-color: #ffffff; color: #000; } /* Base Grid (2, 3 multiples) */
 
     button { background: #2563eb; color: #fff; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 1rem; }
@@ -91,6 +92,7 @@
     <div class="legend">
       <span class="legend-box cell-yellow">Yellow: Prime Candidates</span>
       <span class="legend-box cell-blue">Blue: Pattern Multiples (5s & 7s)</span>
+      <span class="legend-box cell-green">Green: Prime Root Squares (121+)</span>
       <span class="legend-box cell-white">White: Base Numbers</span>
     </div>
 
@@ -142,27 +144,33 @@
       }).render('#paypal-button-500');
     } catch(e) {}
 
-    // Dynamic Algorithmic Logic Matching Your Excel Model
+    // Check if number is divisible by prime root squares starting at 11^2 (121)
+    function isRootSquareComposite(n) {
+      if (n < 121n) return false;
+      const rootPrimes = [11n, 13n, 17n, 19n, 23n, 29n, 31n, 37n, 41n, 43n, 47n, 53n, 59n, 61n, 67n, 71n, 73n, 79n, 83n, 89n, 97n];
+      for (let p of rootPrimes) {
+        if (p * p > n) break;
+        if (n % p === 0n) return true;
+      }
+      return false;
+    }
+
+    // Dynamic Algorithmic Logic
     function getCellColorClass(num) {
-      // Direct Row 1 rule matching your screenshot (1, 4, 5, 7 are yellow)
-      if (num === 1n || num === 4n || num === 5n || num === 7n) {
-        return "cell-yellow";
-      }
-      if (num === 2n || num === 3n || num === 6n) {
-        return "cell-white";
-      }
+      // Row 1 setup
+      if (num === 1n || num === 4n || num === 5n || num === 7n) return "cell-yellow";
+      if (num === 2n || num === 3n || num === 6n) return "cell-white";
 
-      // Filter out multiples of 2 and 3 (keeps non-candidates white)
-      if (num % 2n === 0n || num % 3n === 0n) {
-        return "cell-white";
-      }
+      // Base Grid Filter (Multiples of 2 and 3 stay white)
+      if (num % 2n === 0n || num % 3n === 0n) return "cell-white";
 
-      // Mark multiples of 5 and 7 blue (25, 35, 49, 55, 65, 77, 85, 91, 95, 115, 119, 125, 133...)
-      if (num % 5n === 0n || num % 7n === 0n) {
-        return "cell-blue";
-      }
+      // Pattern Multiples (Multiples of 5 and 7 turn blue)
+      if (num % 5n === 0n || num % 7n === 0n) return "cell-blue";
 
-      // All remaining numbers are Yellow Prime Candidates
+      // Root Square Composites (121, 143, 169, etc. turn green)
+      if (isRootSquareComposite(num)) return "cell-green";
+
+      // Remaining numbers are pure Yellow Prime Candidates
       return "cell-yellow";
     }
 

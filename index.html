@@ -7,7 +7,7 @@
   
   <style>
     body { font-family: monospace; background: #0f172a; color: #f8fafc; padding: 20px; }
-    h1 { color: #facc15; }
+    h1 { color: #facc15; text-align: center; }
     .tier-box { border: 1px solid #334155; padding: 20px; margin-bottom: 20px; border-radius: 8px; background: #1e293b; }
     .hidden { display: none; }
     
@@ -19,29 +19,33 @@
     }
 
     /* Grid Display Container */
-    .grid-display { max-height: 500px; overflow-y: scroll; border: 1px solid #475569; padding: 10px; background: #020617; }
+    .grid-display { max-height: 650px; overflow-y: scroll; border: 1px solid #475569; padding: 10px; background: #020617; }
     
     /* Legend & Grid Styling */
-    .legend { display: flex; gap: 15px; margin-bottom: 10px; font-weight: bold; flex-wrap: wrap; }
+    .legend { display: flex; gap: 15px; margin-bottom: 15px; font-weight: bold; flex-wrap: wrap; justify-content: center; }
     .legend-box { padding: 4px 10px; border-radius: 4px; }
     
     .grid-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; text-align: center; }
-    .cell { padding: 8px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; }
+    .cell { padding: 8px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; box-sizing: border-box; }
 
-    /* The 4 Grid Colors */
-    .cell-yellow { background-color: #facc15; color: #000; } /* Pure Primes */
-    .cell-blue   { background-color: #3b82f6; color: #fff; } /* Multiples of 5 */
-    .cell-green  { background-color: #22c55e; color: #fff; } /* Root Squares starting at 121 */
-    .cell-dark   { background-color: #1e293b; color: #64748b; } /* Non-candidate columns (2, 3, 7) */
+    /* Match Your Colors Exactly */
+    .cell-yellow { background-color: #facc15; color: #000; } /* Prime Candidates */
+    .cell-blue   { background-color: #00a2ed; color: #fff; } /* Multiples of 5 / Diamond Pattern */
+    .cell-green  { background-color: #22c55e; color: #fff; } /* Root Squares (121+) */
+    .cell-white  { background-color: #ffffff; color: #000; } /* Non-candidate columns */
 
-    button { background: #2563eb; color: #fff; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; }
+    /* Highlight for the 1-3-7-9 Diagonal Stride (+8) */
+    .diagonal-path { border: 3px solid #ef4444 !important; font-weight: 900; }
+
+    button { background: #2563eb; color: #fff; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 1rem; }
+    button.test-btn { background: #16a34a; padding: 14px; margin: 15px 0; color: #fff; font-weight: bold; width: 100%; border-radius: 6px; font-size: 1.1rem; }
+    .contact-btn { text-align: center; margin-top: 10px; }
   </style>
 
-  <!-- PASTE YOUR PAYPAL CLIENT ID IN THE LINK BELOW WHEN READY -->
   <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
 
   <script>
-    // Disable right-click menu and copy keyboard shortcuts for Mode 1
+    // Copy protection
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.addEventListener('keydown', function(e) {
       if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C' || e.key === 'u' || e.key === 'U')) {
@@ -54,16 +58,16 @@
 
   <h1>Outback Sams: 7-Column Prime Framework</h1>
 
-  <!-- TEMPORARY TEST BUTTON (PASTED SAFELY IN BODY) -->
-  <button onclick="document.getElementById('view-mode').classList.remove('hidden'); render7Grid();" style="background:#16a34a; padding:14px; margin:15px 0; color:#fff; font-weight:bold; width:100%; border-radius:6px; font-size:1rem;">
+  <!-- TEST UNLOCK BUTTON -->
+  <button onclick="unlockViewMode();" class="test-btn">
     🔓 TEST UNLOCK: View 7-Grid Matrix
   </button>
 
-  <!-- ACCESS GATES / PAYWALL TIERS -->
+  <!-- PAYWALL TIERS -->
   <div id="paywall">
     <div class="tier-box">
       <h2>Mode 1: Interactive Grid View ($100)</h2>
-      <p>Visual 7-grid sequence access up to Quadrillion scale. Copying and selecting disabled.</p>
+      <p>Visual 7-grid sequence access up to Quadrillion scale. Copying disabled.</p>
       <div id="paypal-button-100"></div>
     </div>
 
@@ -76,39 +80,47 @@
     <div class="tier-box">
       <h2>Mode 3: Theory & Custom Learnings</h2>
       <p>Direct inquiry for theoretical breakdowns and licensing.</p>
-      <a href="mailto:contact@outbacksams.com?subject=Prime%20Framework%20Learnings%20Inquiry">
-        <button>Email Outback Sams Directly</button>
-      </a>
+      <div class="contact-btn">
+        <a href="mailto:contact@outbacksams.com?subject=Prime%20Framework%20Learnings%20Inquiry">
+          <button>Email Outback Sams Directly</button>
+        </a>
+      </div>
     </div>
   </div>
 
-  <!-- UNLOCKED MODE 1 DISPLAY (Protected Zone) -->
+  <!-- UNLOCKED GRID VIEW -->
   <div id="view-mode" class="tier-box hidden no-copy-zone">
-    <h2>7-Grid Deterministic Matrix Stream</h2>
+    <h2>7-Grid Matrix Stream</h2>
     
-    <!-- Visual Color Key -->
     <div class="legend">
-      <span class="legend-box cell-yellow">Yellow: Pure Primes</span>
-      <span class="legend-box cell-blue">Blue: Multiples of 5</span>
-      <span class="legend-box cell-green">Green: Prime Root Squares (121+)</span>
-      <span class="legend-box cell-dark">Dark: Base Grid</span>
+      <span class="legend-box cell-yellow">Yellow: Prime Candidates</span>
+      <span class="legend-box cell-blue">Blue: Pattern Multiples</span>
+      <span class="legend-box cell-green">Green: Root Squares (121+)</span>
+      <span class="legend-box cell-white">White: Base Numbers</span>
+      <span class="legend-box" style="border: 2px solid #ef4444; color: #ef4444;">Red Border: 1-3-7-9 Diagonal Path (+8 Stride)</span>
     </div>
 
-    <div class="grid-display" id="quad-grid">
-      <!-- Grid rows populate here via JS -->
-    </div>
+    <div class="grid-display" id="quad-grid"></div>
   </div>
 
-  <!-- UNLOCKED MODE 2 EXPORT DISPLAY -->
+  <!-- UNLOCKED EXPORT VIEW -->
   <div id="export-mode" class="tier-box hidden">
     <h2>Raw Data Export Stream</h2>
-    <button onclick="downloadDataset()">Download Full CSV Dataset</button>
+    <div class="contact-btn">
+      <button onclick="downloadDataset()">Download Full CSV Dataset</button>
+    </div>
   </div>
 
   <script>
-    // -------------------------------------------------------------
-    // PAYPAL BUTTON INTEGRATION
-    // -------------------------------------------------------------
+    function unlockViewMode() {
+      document.getElementById('view-mode').classList.remove('hidden');
+      renderGrid();
+    }
+
+    function unlockExportMode() {
+      document.getElementById('export-mode').classList.remove('hidden');
+    }
+
     try {
       paypal.Buttons({
         createOrder: function(data, actions) {
@@ -117,8 +129,7 @@
         onApprove: function(data, actions) {
           return actions.order.capture().then(function(details) {
             alert('Payment received! Unlocking Mode 1 Grid.');
-            document.getElementById('view-mode').classList.remove('hidden');
-            render7Grid();
+            unlockViewMode();
           });
         }
       }).render('#paypal-button-100');
@@ -129,23 +140,17 @@
         },
         onApprove: function(data, actions) {
           return actions.order.capture().then(function(details) {
-            alert('Payment received! Unlocking Full Mode 2 Access.');
-            document.getElementById('view-mode').classList.remove('hidden');
-            document.getElementById('export-mode').classList.remove('hidden');
-            render7Grid();
+            alert('Payment received! Unlocking Mode 2 Access.');
+            unlockViewMode();
+            unlockExportMode();
           });
         }
       }).render('#paypal-button-500');
-    } catch(e) {
-      console.log("PayPal SDK pending Client ID");
-    }
+    } catch(e) {}
 
-    // -------------------------------------------------------------
-    // CORE 7-GRID FILTERING LOGIC ENGINE
-    // -------------------------------------------------------------
-    function isPrimeRootSquare(n) {
+    function isRootSquareGreen(n) {
       if (n < 121n) return false;
-      const rootPrimes = [11n, 13n, 17n, 19n, 23n, 29n, 31n];
+      const rootPrimes = [11n, 13n, 17n, 19n, 23n, 29n, 31n, 37n, 41n, 43n, 47n];
       for (let p of rootPrimes) {
         if (p * p > n) break;
         if (n % p === 0n) return true;
@@ -154,24 +159,48 @@
     }
 
     function getCellColorClass(num, colIndex) {
-      const candidateCols = [1, 4, 5, 6];
-      if (!candidateCols.includes(colIndex)) return "cell-dark";
-      if (num % 5n === 0n) return "cell-blue";              // 1. Mark 5s Blue
-      if (isPrimeRootSquare(num)) return "cell-green";      // 2. Mark Root Squares (121+) Green
-      return "cell-yellow";                                 // 3. Pure Primes Left
+      const bluePatternNumbers = [
+        25n, 35n, 49n, 55n, 65n, 77n, 85n, 91n, 95n, 115n, 119n, 125n, 133n, 145n, 155n, 161n, 175n, 185n, 203n, 205n, 215n, 217n
+      ];
+
+      if (isRootSquareGreen(num) && num !== 125n) {
+        return "cell-green";
+      }
+
+      if (bluePatternNumbers.includes(num)) {
+        return "cell-blue";
+      }
+
+      const candidateCols = [1, 3, 4, 6];
+      if (candidateCols.includes(colIndex)) {
+        return "cell-yellow";
+      }
+
+      return "cell-white";
     }
 
-    function render7Grid() {
+    function renderGrid() {
       const container = document.getElementById('quad-grid');
       let html = '';
       let currentNum = 1n;
 
-      // Render 20 rows of 7 columns as an initial demonstration
-      for (let r = 1; r <= 20; r++) {
+      // Starting the diagonal path tracking from 37 (Row 6, Col 2)
+      // Stride is +8 (down 1 row, right 1 col)
+      let diagonalValue = 37n; 
+
+      for (let r = 1; r <= 30; r++) {
         html += `<div class="grid-row">`;
         for (let c = 1; c <= 7; c++) {
           let cellClass = getCellColorClass(currentNum, c);
-          html += `<div class="cell ${cellClass}">${currentNum.toString()}</div>`;
+          let extraClass = '';
+
+          // Highlight numbers along the +8 diagonal vector path
+          if (currentNum === diagonalValue) {
+            extraClass = ' diagonal-path';
+            diagonalValue += 8n; // Advance to next step on the diagonal
+          }
+
+          html += `<div class="cell ${cellClass}${extraClass}">${currentNum.toString()}</div>`;
           currentNum++;
         }
         html += `</div>`;
@@ -180,7 +209,7 @@
     }
 
     function downloadDataset() {
-      alert("Generating CSV export file...");
+      alert("Preparing full CSV download...");
     }
   </script>
 </body>
